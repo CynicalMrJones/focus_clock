@@ -1,12 +1,20 @@
 
 
 use std::io;
+use std::io::prelude::*;
+use std::io::BufReader;
+use std::fs::File;
 
+use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
-    crossterm::event::{self, KeyCode, KeyEventKind},
-    style::Stylize,
-    widgets::Paragraph,
+    buffer::Buffer,
+    layout::Rect,
+    text::{Line,Text},
+    symbols::border,
+    style::{Stylize, Modifier, Style, Color},
+    widgets::{Paragraph,Block,Widget,Borders},
     DefaultTerminal,
+    Frame,
 };
 
 
@@ -20,11 +28,17 @@ fn main() -> io::Result<()> {
 }
 
 fn run(mut terminal:DefaultTerminal) -> io::Result<()>{
+    let file = File::open("pic.pic").unwrap();
+    let mut reader = BufReader::new(file);
+    let mut buf = String::new();
+    reader.read_to_string(&mut buf).unwrap();
     loop{
         terminal.draw(|frame|{
-            let greeting = Paragraph::new("Hello world")
+            let greeting = Paragraph::new(buf.clone())
                 .white()
-                .on_blue();
+                .block(Block::default().style(Style::default().white())
+                    .borders(Borders::ALL))
+                .centered();
             frame.render_widget(greeting, frame.area());
         })?;
 
