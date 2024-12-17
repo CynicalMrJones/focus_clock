@@ -1,5 +1,6 @@
 
 mod clock;
+use clock::clock;
 use std::io;
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -7,16 +8,10 @@ use std::fs::File;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind};
 use ratatui::{
-    buffer::Buffer,
-    layout::Rect,
-    text::{Line,Text},
-    symbols::border,
-    style::{Stylize, Modifier, Style, Color},
-    widgets::{Paragraph,Block,Widget,Borders},
+    layout::Constraint, prelude::{Alignment, CrosstermBackend, Direction, Layout, Style, Terminal}, style::{Modifier, Color, Styled, Stylize}, widgets::{block, Block, Borders, Paragraph, Wrap, List, ListState},
     DefaultTerminal,
-    Frame,
 };
-
+use std::{thread, time::Duration};
 
 fn main() -> io::Result<()> {
     let mut terminal = ratatui::init();
@@ -33,12 +28,26 @@ fn run(mut terminal:DefaultTerminal) -> io::Result<()>{
     reader.read_to_string(&mut buf).unwrap();
     loop{
         terminal.draw(|frame|{
-            let greeting = Paragraph::new(buf.clone())
+            let picture = Paragraph::new(buf.clone())
                 .white()
                 .block(Block::default().style(Style::default().white())
                     .borders(Borders::ALL))
                 .centered();
-            frame.render_widget(greeting, frame.area());
+            let outer_border = Layout::default()
+                .direction(Direction::Vertical)
+                .constraints(vec![
+                    Constraint::Percentage(90),
+                    Constraint::Percentage(10),
+                ])
+                .split(frame.area());
+            frame.render_widget(picture, outer_border[0]);
+            let clock_string = clock(4200);
+            let clock = Paragraph::new(clock_string)
+                .white()
+                .block(Block::default().style(Style::default().white())
+                    .borders(Borders::ALL))
+                .centered();
+            frame.render_widget(clock, outer_border[1]);
         })?;
 
         if let event::Event::Key(key) = event::read()?{
