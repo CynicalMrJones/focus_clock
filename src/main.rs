@@ -1,5 +1,5 @@
 
-
+mod clock;
 use std::io;
 use std::io::prelude::*;
 use std::io::BufReader;
@@ -19,7 +19,6 @@ use ratatui::{
 
 
 fn main() -> io::Result<()> {
-
     let mut terminal = ratatui::init();
     terminal.clear()?;
     let app_result = run(terminal);

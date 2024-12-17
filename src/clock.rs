@@ -4,7 +4,7 @@ use std::io::prelude::*;
 use std::io::BufReader;
 use std::fs::File;
 
-fn main() {
+pub fn clock() -> String{
     struct Clock{
         hour: i32,
         minute: i32,
@@ -21,16 +21,8 @@ fn main() {
     let sec = clock.sec;
     let mut sum:i32 = hour + minute + sec;
     
-    let file = File::open("pic.pic").unwrap();
-    let mut reader = BufReader::new(file);
-    let mut buffer = String::new();
-
-    reader.read_to_string(&mut buffer).unwrap();
 
     while sum >= 0 {
-        //Clear the screen
-        println!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-        println!("{}", buffer);
         println!("{:02}:{:02}:{:02}", clock.hour, clock.minute,clock.sec);
         clock.sec = clock.sec - 1;
         if clock.sec < 0 {
