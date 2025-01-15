@@ -36,8 +36,8 @@ fn run(mut terminal:DefaultTerminal) -> io::Result<()>{
             let outer_border = Layout::default()
                 .direction(Direction::Vertical)
                 .constraints(vec![
-                    Constraint::Percentage(90),
-                    Constraint::Percentage(10),
+                    Constraint::Percentage(85),
+                    Constraint::Percentage(15),
                 ])
                 .split(frame.area());
             frame.render_widget(picture, outer_border[0]);
